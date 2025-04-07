@@ -1,0 +1,15 @@
+{
+  "originHash" : "213e3d25e1340a0457232ccc8b41ac09178b2d933b01896c08069a1404ba8227",
+  "pins" : [
+    {
+      "identity" : "navigator",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hmlongco/Navigator.git",
+      "state" : {
+        "revision" : "c86f201c35c6ed621ddd561206f5aec1a5a67dab",
+        "version" : "0.9.26"
+      }
+    }
+  ],
+  "version" : 3
+}
