@@ -7,52 +7,37 @@
 import Foundation
 import SwiftUI
 
-class UnitsViewModel: ObservableObject  {
-    @Published var inputValue = ""
-    @Published var outputValue = ""
+class UnitsViewModel: ObservableObject {
+    // MARK: - Published Properties
+    @Published var inputValue: String = ""
+    @Published var outputValue: String = ""
     
-    @Published var inputUnitValue = 2
-    let inputUnits = ["meters", "millimeters", "centimeters", "kilometers", "feet"]
+    @Published var selectedCategory: UnitCategory = .length
+    @Published var selectedInputUnitIndex: Int = 0
+    @Published var selectedOutputUnitIndex: Int = 1
     
-    @Published var outputUnitValue = 2
-    let outputUnits = ["meters", "millimeters", "centimeters", "kilometers", "feet"]
+    // MARK: - Computed Properties
     
-    var inputUnitAfterConversionToOutput: String {
+    /// 当前单位分类下所有单位（作为 Picker 数据源）
+    var availableUnits: [UnitOption] {
+        selectedCategory.units
+    }
+    
+    /// 根据输入值和选定单位计算转换结果
+    var conversionResult: String {
+        let inputUnits = availableUnits
+        guard inputUnits.indices.contains(selectedInputUnitIndex),
+              inputUnits.indices.contains(selectedOutputUnitIndex) else {
+            return "Invalid selection"
+        }
+        
+        let fromUnit = inputUnits[selectedInputUnitIndex].unit
+        let toUnit = inputUnits[selectedOutputUnitIndex].unit
+        
         let value = Double(inputValue) ?? 0
-        var input = Measurement(value: value, unit: UnitLength.meters)
+        let inputMeasurement = Measurement(value: value, unit: fromUnit)
+        let converted = inputMeasurement.converted(to: toUnit)
         
-        switch inputUnits[inputUnitValue] {
-        case "meters":
-            input = Measurement(value: value, unit: .meters)
-        case "millimeters":
-            input = Measurement(value: value, unit: .millimeters)
-        case "centimeters":
-            input = Measurement(value: value, unit: .centimeters)
-        case "kilometers":
-            input = Measurement(value: value, unit: .kilometers)
-        case "feet":
-            input = Measurement(value: value, unit: .feet)
-        default:
-            input = Measurement(value: value, unit: .meters)
-        }
-        
-        let converted: Measurement<UnitLength>
-        switch outputUnits[outputUnitValue] {
-        case "meters":
-            converted = input.converted(to: .meters)
-        case "millimeters":
-            converted = input.converted(to: .millimeters)
-        case "centimeters":
-            converted = input.converted(to: .centimeters)
-        case "kilometers":
-            converted = input.converted(to: .kilometers)
-        case "feet":
-            converted = input.converted(to: .feet)
-        default:
-            converted = input.converted(to: .meters)
-        }
-
-        // 保留两位小数并拼接单位
         let formattedValue = String(format: "%.2f", converted.value)
         return "\(formattedValue) \(converted.unit.symbol)"
     }
